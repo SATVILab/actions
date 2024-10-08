@@ -10,6 +10,9 @@ inputs:
     description: "Name of the organization (if the project is an organization project)"
     required: false
     default: "SATVILab"
+  PUSH_TO_PROJECT_TOKEN:
+    description: "GitHub token with correct access for accessing issues and writing to projects"
+    required: true
 runs:
   using: "composite"
   steps:
@@ -23,7 +26,7 @@ runs:
     - name: Authenticate with PAT
       shell: bash
       env:
-        PUSH_TO_PROJECT_TOKEN: "${{ secrets.PUSH_TO_PROJECT_TOKEN }}"
+        PUSH_TO_PROJECT_TOKEN: "${{ env.PUSH_TO_PROJECT_TOKEN }}"
       run: |
         unset GH_TOKEN
         unset GITHUB_TOKEN
@@ -63,7 +66,7 @@ runs:
       shell: bash
       env:
         ISSUES: "${{ env.issues }}"
-        PUSH_TO_PROJECT_TOKEN: "${{ secrets.PUSH_TO_PROJECT_TOKEN }}"
+        PUSH_TO_PROJECT_TOKEN: "${{ env.PUSH_TO_PROJECT_TOKEN }}"
         PROJECT_ID: "${{ env.project_id }}"
       run: |
         existing_issue_ids=()
