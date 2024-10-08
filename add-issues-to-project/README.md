@@ -17,17 +17,23 @@ The **Add Issues to Project** action automates the process of adding all open is
   - `read:org`
   - `project`
 
-  Store this token securely as a secret in your repository or organization settings (e.g., `PUSH_TO_PROJECT_TOKEN`).
+  Store this token securely as a secret in your repository or organization settings (e.g., `ADD_ISSUES_TO_PROJECT_TOKEN`).
+
 
 ## Inputs
 
 - **`project_name`** (required): The name of the GitHub Project to which issues should be added.
 - **`org_name`** (optional): The name of the organization if the project is an organization project. Defaults to `SATVILab`.
-- **`PUSH_TO_PROJECT_TOKEN`** (required): The GitHub token with access to issues and projects.
+- **`ADD_ISSUES_TO_PROJECT_TOKEN`** (required): The GitHub token with access to issues and projects.
 
 ## Usage
 
 ### 1. Create or Obtain a Personal Access Token (PAT)
+
+*Note*: for SATVI members, an organisation secret named `ADD_ISSUES_TO_PROJECT_TOKEN` is already set and will automatically be available for repos on `SATVILab`:
+
+- steps 1 and 2 may be skipped, and
+- step 3 already has the correct name for the secret.
 
 Generate a PAT with the necessary scopes:
 
@@ -46,7 +52,7 @@ Add the PAT to your repository secrets:
 1. Navigate to your repository on GitHub.
 2. Go to **Settings** > **Secrets and variables** > **Actions**.
 3. Click **New repository secret**.
-4. Name it `PUSH_TO_PROJECT_TOKEN` and paste your PAT.
+4. Name it `ADD_ISSUES_TO_PROJECT_TOKEN` and paste your PAT.
 
 ### 3. Set Up the Workflow
 
@@ -81,7 +87,7 @@ jobs:
           project_name: ${{ github.event.inputs.project_name }}
           org_name: ${{ github.event.inputs.org_name }}
         env:
-          PUSH_TO_PROJECT_TOKEN: ${{ secrets.PUSH_TO_PROJECT_TOKEN }}
+          ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
 ```
 
 ### 4. Trigger the Workflow
@@ -95,7 +101,7 @@ You can manually trigger the workflow:
 ## Notes
 
 - **GitHub CLI and jq:** The action installs the GitHub CLI (`gh`) and `jq` during runtime to interact with GitHub's API.
-- **Authentication:** The action unsets any existing `GH_TOKEN` or `GITHUB_TOKEN` to ensure it uses your provided `PUSH_TO_PROJECT_TOKEN`.
+- **Authentication:** The action unsets any existing `GH_TOKEN` or `GITHUB_TOKEN` to ensure it uses your provided `ADD_ISSUES_TO_PROJECT_TOKEN`.
 - **Existing Issues:** The action checks for existing issues in the project to avoid duplicates.
 - **Organization Projects:** If you're adding issues to an organization project, ensure you provide the `org_name`.
 
@@ -132,12 +138,12 @@ jobs:
           project_name: ${{ github.event.inputs.project_name }}
           org_name: ${{ github.event.inputs.org_name }}
         env:
-          PUSH_TO_PROJECT_TOKEN: ${{ secrets.PUSH_TO_PROJECT_TOKEN }}
+          ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
 ```
 
 ## Troubleshooting
 
-- **Authentication Errors:** Ensure your `PUSH_TO_PROJECT_TOKEN` has the correct scopes and is stored correctly as a secret.
+- **Authentication Errors:** Ensure your `ADD_ISSUES_TO_PROJECT_TOKEN` has the correct scopes and is stored correctly as a secret.
 - **Project Not Found:** Verify that the `project_name` and `org_name` are correct and that the project exists.
 - **Permission Issues:** Make sure the PAT has access to the organization and the project.
 
