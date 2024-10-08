@@ -87,7 +87,7 @@ jobs:
           org_name: ${{ github.event.inputs.org_name }}
         env:
           ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
-        uses: SATVILab/actions/add-issues-to-project@v1
+        uses: SATVILab/actions/add-issues-to-project@v1.0.03
 
 ```
 
@@ -139,7 +139,7 @@ jobs:
           org_name: ${{ github.event.inputs.org_name }}
         env:
           ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
-        uses: SATVILab/actions/add-issues-to-project@v1
+        uses: SATVILab/actions/add-issues-to-project@v1.0.03
 
 ```
 
