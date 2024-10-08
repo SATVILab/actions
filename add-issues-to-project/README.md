@@ -82,12 +82,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Add Issues to Project Action
-        uses: SATVILab/actions/add-issues-to-project@v1
         with:
           project_name: ${{ github.event.inputs.project_name }}
           org_name: ${{ github.event.inputs.org_name }}
         env:
           ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
+        uses: SATVILab/actions/add-issues-to-project@v1
+
 ```
 
 ### 4. Trigger the Workflow
@@ -133,12 +134,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Add Issues to Project Action
-        uses: SATVILab/actions/add-issues-to-project@v1
         with:
           project_name: ${{ github.event.inputs.project_name }}
           org_name: ${{ github.event.inputs.org_name }}
         env:
           ADD_ISSUES_TO_PROJECT_TOKEN: ${{ secrets.ADD_ISSUES_TO_PROJECT_TOKEN }}
+        uses: SATVILab/actions/add-issues-to-project@v1
+
 ```
 
 ## Troubleshooting
