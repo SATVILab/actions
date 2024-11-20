@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Add Issues to Project Action
-        uses: MiguelRodo/actions/add-issues-to-project@v1.0.16
+        uses: SATVILab/actions/add-issues-to-project@v1.2.1
         with:
           project_name: ${{ github.event.inputs.project_name }}
           project_owner: ${{ github.event.inputs.project_owner }}

@@ -1,7 +1,7 @@
 # action.yml
 name: 'Pre-build Dev Container'
 description: 'Pre-builds a dev container image with optional caching'
-author: 'Miguel Rodo <miguel.rodo@uct.ac.za'
+author: 'Miguel Rodo <miguel.rodo@uct.ac.za>'
 inputs:
   use_cache:
     description: 'Use cache when building the image'
@@ -11,6 +11,9 @@ inputs:
     description: 'Name of the image to build'
     required: false
     default: ''
+  GITHUB_TOKEN:
+    description: 'GitHub token for authentication'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -27,7 +30,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ inputs.GITHUB_TOKEN }}
 
     - name: Set lowercase image name
       shell: bash
@@ -40,6 +43,7 @@ runs:
         echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
     - name: Debug IMAGE_NAME
+      shell: bash
       run: |
         echo "IMAGE_NAME is set to: $IMAGE_NAME"
 

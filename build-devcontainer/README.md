@@ -15,8 +15,6 @@ To quickly set up the **Pre-build Dev Container** action in your repository:
 5. **Trigger the workflow** manually from the GitHub Actions tab if desired.
 
 ```yaml
-# .github/workflows/devcontainer-build.yml
-
 name: 'Pre-build Dev Container'
 
 on:
@@ -36,9 +34,10 @@ jobs:
 
     steps:
       - name: Build Dev Container
-        uses: SATVILab/build-devcontainer@v1.2.0
+        uses: SATVILab/actions/build-devcontainer@v1.2.1
         with:
           use_cache: ${{ github.event.inputs.use_cache }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 It will run automatically when the repo is pushed to.
