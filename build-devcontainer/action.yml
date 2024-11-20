@@ -19,8 +19,10 @@ runs:
   steps:
     - name: Set USE_CACHE variable
       shell: bash
+      env:
+        USE_CACHE: "${{ inputs.use_cache }}"
       run: |
-        echo "USE_CACHE=${{ inputs.use_cache }}" >> $GITHUB_ENV
+        echo "USE_CACHE=${USE_CACHE}" >> $GITHUB_ENV
 
     - name: Checkout (GitHub)
       uses: actions/checkout@v4
@@ -34,18 +36,30 @@ runs:
 
     - name: Set lowercase image name
       shell: bash
+      env:
+        IMAGE_NAME_INPUT: "${{ inputs.image_name }}"
+        GITHUB_REPOSITORY: "${{ github.repository }}"
       run: |
-        if [ -z "${{ inputs.image_name }}" ]; then
+        if [ -z "${IMAGE_NAME_INPUT}" ]; then
           IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}"
         else
-          IMAGE_NAME="${{ inputs.image_name }}"
+          IMAGE_NAME="${IMAGE_NAME_INPUT}"
         fi
         echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
     - name: Debug IMAGE_NAME
       shell: bash
+      env:
+        IMAGE_NAME: "${{ env.IMAGE_NAME }}"
       run: |
         echo "IMAGE_NAME is set to: $IMAGE_NAME"
+
+    - name: Set GITHUB_TOKEN for subsequent steps
+      shell: bash
+      env:
+        GITHUB_TOKEN: "${{ inputs.GITHUB_TOKEN }}"
+      run: |
+        echo "GITHUB_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
 
     - name: Pre-build dev container image (with cache)
       if: env.USE_CACHE == 'true'
@@ -62,6 +76,8 @@ runs:
 
     - name: Update or create prebuild/devcontainer.json
       shell: bash
+      env:
+        IMAGE_NAME: "${{ env.IMAGE_NAME }}"
       run: |
         # Define the paths
         DEVCONTAINER_JSON=".devcontainer/devcontainer.json"
@@ -87,6 +103,9 @@ runs:
 
     - name: Commit and push changes
       shell: bash
+      env:
+        GITHUB_TOKEN: "${{ inputs.GITHUB_TOKEN }}"
+        GITHUB_REPOSITORY: "${{ github.repository }}"
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions"
@@ -97,4 +116,7 @@ runs:
           echo "No changes to commit"
         else
           git commit -m "Update prebuild devcontainer.json with the latest image"
+          # Set up the remote URL with the GITHUB_TOKEN for authentication
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push
+        fi
