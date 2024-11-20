@@ -1,0 +1,96 @@
+# action.yml
+name: 'Pre-build Dev Container'
+description: 'Pre-builds a dev container image with optional caching'
+author: 'Miguel Rodo <miguel.rodo@uct.ac.za'
+inputs:
+  use_cache:
+    description: 'Use cache when building the image'
+    required: false
+    default: 'true'
+  image_name:
+    description: 'Name of the image to build'
+    required: false
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: Set USE_CACHE variable
+      shell: bash
+      run: |
+        echo "USE_CACHE=${{ inputs.use_cache }}" >> $GITHUB_ENV
+
+    - name: Checkout (GitHub)
+      uses: actions/checkout@v4
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set lowercase image name
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.image_name }}" ]; then
+          IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}"
+        else
+          IMAGE_NAME="${{ inputs.image_name }}"
+        fi
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+    - name: Debug IMAGE_NAME
+      run: |
+        echo "IMAGE_NAME is set to: $IMAGE_NAME"
+
+    - name: Pre-build dev container image (with cache)
+      if: env.USE_CACHE == 'true'
+      uses: devcontainers/ci@v0.3
+      with:
+        imageName: ${{ env.IMAGE_NAME }}
+        cacheFrom: ${{ env.IMAGE_NAME }}
+
+    - name: Pre-build dev container image (without cache)
+      if: env.USE_CACHE != 'true'
+      uses: devcontainers/ci@v0.3
+      with:
+        imageName: ${{ env.IMAGE_NAME }}
+
+    - name: Update or create prebuild/devcontainer.json
+      shell: bash
+      run: |
+        # Define the paths
+        DEVCONTAINER_JSON=".devcontainer/devcontainer.json"
+        PREBUILD_JSON=".devcontainer/prebuild/devcontainer.json"
+
+        # Create the prebuild directory if it doesn't exist
+        mkdir -p "$(dirname "$PREBUILD_JSON")"
+
+        # If prebuild/devcontainer.json exists, update the image line
+        if [ -f "$PREBUILD_JSON" ]; then
+          jq --arg image "$IMAGE_NAME" '.image = $image' "$PREBUILD_JSON" > temp.json && mv temp.json "$PREBUILD_JSON"
+        else
+          # If prebuild/devcontainer.json doesn't exist, copy only the customizations and set the image
+          if [ -f "$DEVCONTAINER_JSON" ]; then
+            jq --arg image "$IMAGE_NAME" \
+              '{image: $image, customizations: .customizations}' \
+              "$DEVCONTAINER_JSON" > "$PREBUILD_JSON"
+          else
+            echo "No devcontainer.json found to copy customizations from!"
+            exit 1
+          fi
+        fi
+
+    - name: Commit and push changes
+      shell: bash
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add .devcontainer/prebuild/devcontainer.json
+
+        # Check if there is anything to commit
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update prebuild devcontainer.json with the latest image"
+          git push
