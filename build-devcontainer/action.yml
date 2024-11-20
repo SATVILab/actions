@@ -67,12 +67,14 @@ runs:
       with:
         imageName: ${{ env.IMAGE_NAME }}
         cacheFrom: ${{ env.IMAGE_NAME }}
+        push: always
 
     - name: Pre-build dev container image (without cache)
       if: env.USE_CACHE != 'true'
       uses: devcontainers/ci@v0.3
       with:
         imageName: ${{ env.IMAGE_NAME }}
+        push: always
 
     - name: Update or create prebuild/devcontainer.json
       shell: bash
