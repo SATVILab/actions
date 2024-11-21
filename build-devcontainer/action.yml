@@ -120,5 +120,15 @@ runs:
           git commit -m "Update prebuild devcontainer.json with the latest image"
           # Set up the remote URL with the GITHUB_TOKEN for authentication
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push
+          
+          # Fetch the latest changes from the remote repository
+          git fetch origin
+
+          # Attempt to fast-forward merge
+          if git merge --ff-only origin/$(git rev-parse --abbrev-ref HEAD); then
+            echo "Fast-forwarded successfully. Pushing changes..."
+            git push
+          else
+            echo "Could not fast-forward. Not pushing changes."
+          fi
         fi
