@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Add Issues to Project Action
-        uses: SATVILab/actions/add-issues-to-project@v1.2.2
+        uses: SATVILab/actions/add-issues-to-project@v1.2.3
         with:
           project_name: ${{ github.event.inputs.project_name }}
           project_owner: ${{ github.event.inputs.project_owner }}
@@ -200,7 +200,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Add Issues to Project Action
-        uses: SATVILab/actions/add-issues-to-project@v1.2.0
+        uses: SATVILab/actions/add-issues-to-project@v1.2.3
         with:
           project_name: ${{ github.event.inputs.project_name }}
           project_owner: ${{ github.event.inputs.project_owner }}

@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Build Dev Container
-        uses: SATVILab/actions/build-devcontainer@v1.2.2
+        uses: SATVILab/actions/build-devcontainer@v1.2.3
         with:
           use_cache: ${{ github.event.inputs.use_cache }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
