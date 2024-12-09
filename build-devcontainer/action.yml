@@ -17,12 +17,16 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set USE_CACHE variable
+    - name: Set NO_CACHE variable
       shell: bash
       env:
         USE_CACHE: "${{ inputs.use_cache }}"
       run: |
-        echo "USE_CACHE=${USE_CACHE}" >> $GITHUB_ENV
+        if [ "$USE_CACHE" = "true" ]; then
+            echo "NO_CACHE=false" >> $GITHUB_ENV
+        else
+            echo "NO_CACHE=true" >> $GITHUB_ENV
+        fi
 
     - name: Checkout (GitHub)
       uses: actions/checkout@v4
@@ -61,19 +65,11 @@ runs:
       run: |
         echo "GITHUB_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
 
-    - name: Pre-build dev container image (with cache)
-      if: env.USE_CACHE == 'true'
+    - name: Pre-build dev container image
       uses: devcontainers/ci@v0.3
       with:
         imageName: ${{ env.IMAGE_NAME }}
-        cacheFrom: ${{ env.IMAGE_NAME }}
-        push: always
-
-    - name: Pre-build dev container image (without cache)
-      if: env.USE_CACHE != 'true'
-      uses: devcontainers/ci@v0.3
-      with:
-        imageName: ${{ env.IMAGE_NAME }}
+        noCache: ${{ env.NO_CACHE }}
         push: always
 
     - name: Update or create prebuild/devcontainer.json
